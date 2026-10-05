@@ -1,0 +1,45 @@
+# Scaffold: adapt the API command if your Python entry point differs.
+# Keep the service names, container ports, runtime .env, and SQLite volume.
+services:
+  api:
+    image: delivery-agent:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["uvicorn", "src.api:app", "--host", "0.0.0.0", "--port", "8000"]
+    env_file:
+      - .env
+    environment:
+      SQLITE_PATH: /app/data/conversations.sqlite3
+    volumes:
+      - conversation-data:/app/data
+    ports:
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=2)"
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  ui:
+    image: delivery-agent:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command:
+      ["streamlit", "run", "app.py", "--server.address", "0.0.0.0", "--server.port", "8501"]
+    environment:
+      AGENT_API_URL: http://api:8000
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8501:8501"
+
+volumes:
+  conversation-data:
