@@ -1,0 +1,79 @@
+Hacktiv8 Applied AI Engineer - Milestone 2
+Analytics Agent - Test Evidence
+Date: 2026-10-28
+
+1. test_sql_guard.py
+PASS: 9/9 checks
+- Valid SELECT, aggregate, DATE_TRUNC, CASE
+- Unauthorized column/table rejected
+- INSERT rejected
+- Multiple statements rejected
+
+2. test_sql_functions.py
+PASS: 5/5 checks
+- COUNT, SUM, DATE_TRUNC, ROUND allowed
+- PG_SLEEP blocked
+
+3. test_plan_guard.py
+PASS: 5/5 checks
+- Valid carrier plan allowed
+- Unauthorized table, group-by, filter, and excessive limit rejected
+
+4. test_scope_guard.py
+PASS: 8/8 checks
+- Analytics requests allowed
+- Out-of-scope, credential, token, prompt-injection,
+  SQL guard bypass, and operational-change requests rejected
+
+5. test_agent_scope.py
+PASS
+- Four out-of-scope requests rejected before Query Service
+
+6. test_query_service.py
+PASS: 4/4 checks
+- Valid analytics query executed
+- Unauthorized table and column rejected
+- DELETE rejected
+
+7. test_exception_injection.py
+PASS
+- SHP-00118 exception_note retrieved as data
+- Test reported that embedded instructions were not executed
+
+8. test_exception_notes.py
+PASS: query succeeded; 20 rows returned
+
+9. test_followup.py
+PASS: two conversational turns answered
+- Current week: 13 shipments
+- Previous week: 13 shipments
+
+10. test_agent.py
+PASS: four scenarios produced expected outcomes
+- Three analytics questions answered
+- One out-of-scope question rejected
+
+11. test_auth.py
+PASS: five authorization checks
+- User A creates and reads own conversation
+- User B receives 404 when reading/writing User A's conversation
+- Missing token receives 401
+
+12. test_llm_planner.py
+PASS: planner produced a structured shipments_per_carrier plan
+
+13. test_message_api.py
+PASS
+- Conversation creation returned HTTP 201
+- Message endpoint returned HTTP 200 with analytics answer
+
+14. test_sql_builder.py
+PASS
+- Test function executed directly
+- Generated SQL passed the assertions and SQL validation
+
+LIMITATIONS / NOT YET VERIFIED
+- Docker build and docker compose runtime not yet verified here.
+- Full evaluation suite and all 13 evaluation cases not yet re-run end-to-end.
+- LLM tests depend on a configured provider API key.
+- Database-dependent results were tested against the configured Gold Database.
